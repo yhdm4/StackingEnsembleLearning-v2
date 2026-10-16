@@ -1,0 +1,927 @@
+{
+  "status": "frozen_for_execution",
+  "plan_version": "2026-10-15-fixed-GitHub-architecture-independent-grid-random-subset",
+  "scope": "paper_sections_4.2_4.3_4.4_4.5",
+  "data_policy": {
+    "wine": "white_only",
+    "identical_inputs": "exact_grouping_target_mean_equal_group_weight",
+    "target_iqr_filter": false,
+    "target_3sigma_filter": false,
+    "nonfinite_check": true,
+    "scaling": "fit_on_own_training_scope_only"
+  },
+  "outer_split": {
+    "folds": 5,
+    "shuffle": true,
+    "random_state": 42
+  },
+  "tuning_split": {
+    "strategy": "one_holdout_per_outer_training_pool",
+    "validation_fraction_of_training_pool": 0.2,
+    "random_state_base": 20261014,
+    "fractions": [
+      0.64,
+      0.16,
+      0.2
+    ]
+  },
+  "base_oof": {
+    "folds": 10,
+    "shuffle": true,
+    "random_state": 42,
+    "preprocessing": "independent_in_each_base_training_fold",
+    "test_prediction": "mean_of_10_saved_models_per_base_type"
+  },
+  "methods": [
+    "Proposed",
+    "Meta-LR",
+    "Meta-Ridge",
+    "Meta-XGB",
+    "Meta-RF",
+    "Meta-SVM",
+    "E2E-XGB",
+    "E2E-RF",
+    "E2E-SVM",
+    "E2E-MLP",
+    "NN-Stacking",
+    "Convex-Stacking"
+  ],
+  "neural_methods": [
+    "Proposed",
+    "E2E-MLP",
+    "NN-Stacking"
+  ],
+  "optimizer": {
+    "name": "AdamW",
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08
+  },
+  "neural_seed": 42,
+  "leaky_relu_negative_slope": 0.01,
+  "paper45_selection": {
+    "candidate_count_per_dataset_method_fold": 6,
+    "max_epochs": 3000,
+    "min_epochs_before_stopping": 50,
+    "patience_epochs": 50,
+    "patience_relative_improvement": 0.0001,
+    "validation_frequency_epochs": 1,
+    "metric": "original_unit_validation_MSE",
+    "checkpoint": "absolute_minimum_validation_MSE",
+    "relative_tie_tolerance": 0.001,
+    "tie_break": [
+      "fewest_parameters",
+      "shortest_best_validation_epoch",
+      "candidate_id"
+    ],
+    "final_refit": "new_initialization_full_80_percent_for_selected_best_epoch",
+    "final_checkpoint": "fixed_epoch_endpoint",
+    "test_used_for_selection": false,
+    "search_strategy": "fixed_seed_random_subset_without_replacement_from_independent_discrete_grid",
+    "independent_grid": {
+      "dropout": [
+        0.0,
+        0.1,
+        0.2,
+        0.3,
+        0.4
+      ],
+      "weight_decay": [
+        0.0,
+        1e-06,
+        0.0001,
+        0.001
+      ]
+    },
+    "full_grid_size": 20,
+    "sampled_candidate_count": 6,
+    "candidate_generation_seed": 20261014,
+    "grid_fully_exhausted": false,
+    "explicit_GitHub_reference_candidate": false,
+    "forced_GitHub_value_inclusion": false,
+    "forced_GitHub_value_exclusion": false,
+    "candidate_table_shared_across_datasets_folds_and_neural_methods": true
+  },
+  "ranking": {
+    "metric": "original_unit_MSE",
+    "within_fold_ties": "average",
+    "dataset_rank": "mean_of_5_fold_ranks",
+    "overall_rank": "equal_mean_of_6_dataset_average_ranks",
+    "final_order_ties": "minimum_rank",
+    "auxiliary_metrics": [
+      "R2",
+      "MAE",
+      "RMSE",
+      "MAPE",
+      "MSELoss"
+    ]
+  },
+  "datasets": {
+    "AlignedData_aligned": {
+      "abbreviation": "AD",
+      "source_sha256": "a713af597106369ef6321c9ca2229e6551a4e1fcfe06659e67ba2222744af514",
+      "expected_active_data_path": "data/AlignedData_aligned.csv",
+      "paper42_43": {
+        "hidden_dims": [
+          1024,
+          768,
+          384,
+          192
+        ],
+        "lr": 0.0004,
+        "batch_size": 512,
+        "epochs": 2000,
+        "activation": "Sigmoid",
+        "batch_norm": false,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "selection": "minimum_training_MSE",
+        "joint_input_model_shared_between_42_and_43": true
+      },
+      "paper44": {
+        "hidden_dims": [
+          1536,
+          1024,
+          512,
+          256
+        ],
+        "lr": 0.0003,
+        "batch_size": 512,
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "max_epochs": 3000,
+        "selection": "minimum_evaluation_mode_training_MSE",
+        "validation_used": false,
+        "early_stopping": false,
+        "lr_scheduler": {
+          "name": "ReduceLROnPlateau",
+          "mode": "min",
+          "factor": 0.5,
+          "patience": 100,
+          "threshold": 0.0001,
+          "threshold_mode": "rel",
+          "cooldown": 0,
+          "min_lr": 1e-06,
+          "eps": 1e-08
+        }
+      },
+      "paper45": {
+        "candidates": [
+          {
+            "candidate_id": "C01",
+            "hidden_dims": [
+              1536,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0003,
+            "batch_size": 512,
+            "dropout": 0.4,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C02",
+            "hidden_dims": [
+              1536,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0003,
+            "batch_size": 512,
+            "dropout": 0.1,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C03",
+            "hidden_dims": [
+              1536,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0003,
+            "batch_size": 512,
+            "dropout": 0.1,
+            "weight_decay": 0.0
+          },
+          {
+            "candidate_id": "C04",
+            "hidden_dims": [
+              1536,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0003,
+            "batch_size": 512,
+            "dropout": 0.3,
+            "weight_decay": 0.001
+          },
+          {
+            "candidate_id": "C05",
+            "hidden_dims": [
+              1536,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0003,
+            "batch_size": 512,
+            "dropout": 0.2,
+            "weight_decay": 0.0001
+          },
+          {
+            "candidate_id": "C06",
+            "hidden_dims": [
+              1536,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0003,
+            "batch_size": 512,
+            "dropout": 0.4,
+            "weight_decay": 0.0
+          }
+        ],
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "learning_rate_scheduler": false
+      }
+    },
+    "Concrete_Data": {
+      "abbreviation": "CO",
+      "source_sha256": "f656a971ce020d12a7d5e1d4aebd103aa28d99a164efca7125091a05380d3db2",
+      "expected_active_data_path": "data/Concrete_Data.csv",
+      "paper42_43": {
+        "hidden_dims": [
+          256,
+          128,
+          64
+        ],
+        "lr": 0.0008,
+        "batch_size": 64,
+        "epochs": 2000,
+        "activation": "Sigmoid",
+        "batch_norm": false,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "selection": "minimum_training_MSE",
+        "joint_input_model_shared_between_42_and_43": true
+      },
+      "paper44": {
+        "hidden_dims": [
+          384,
+          192,
+          96
+        ],
+        "lr": 0.0008,
+        "batch_size": 32,
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "max_epochs": 3000,
+        "selection": "minimum_evaluation_mode_training_MSE",
+        "validation_used": false,
+        "early_stopping": false,
+        "lr_scheduler": {
+          "name": "ReduceLROnPlateau",
+          "mode": "min",
+          "factor": 0.5,
+          "patience": 100,
+          "threshold": 0.0001,
+          "threshold_mode": "rel",
+          "cooldown": 0,
+          "min_lr": 1e-06,
+          "eps": 1e-08
+        }
+      },
+      "paper45": {
+        "candidates": [
+          {
+            "candidate_id": "C01",
+            "hidden_dims": [
+              384,
+              192,
+              96
+            ],
+            "lr": 0.0008,
+            "batch_size": 32,
+            "dropout": 0.4,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C02",
+            "hidden_dims": [
+              384,
+              192,
+              96
+            ],
+            "lr": 0.0008,
+            "batch_size": 32,
+            "dropout": 0.1,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C03",
+            "hidden_dims": [
+              384,
+              192,
+              96
+            ],
+            "lr": 0.0008,
+            "batch_size": 32,
+            "dropout": 0.1,
+            "weight_decay": 0.0
+          },
+          {
+            "candidate_id": "C04",
+            "hidden_dims": [
+              384,
+              192,
+              96
+            ],
+            "lr": 0.0008,
+            "batch_size": 32,
+            "dropout": 0.3,
+            "weight_decay": 0.001
+          },
+          {
+            "candidate_id": "C05",
+            "hidden_dims": [
+              384,
+              192,
+              96
+            ],
+            "lr": 0.0008,
+            "batch_size": 32,
+            "dropout": 0.2,
+            "weight_decay": 0.0001
+          },
+          {
+            "candidate_id": "C06",
+            "hidden_dims": [
+              384,
+              192,
+              96
+            ],
+            "lr": 0.0008,
+            "batch_size": 32,
+            "dropout": 0.4,
+            "weight_decay": 0.0
+          }
+        ],
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "learning_rate_scheduler": false
+      }
+    },
+    "parkinsons_updrs_regression": {
+      "abbreviation": "PU",
+      "source_sha256": "5596e4e0bcb88246edf2a217912d7306a1b81ba158b21f190b3e7d06e2a6f313",
+      "expected_active_data_path": "data/parkinsons_updrs_regression.csv",
+      "paper42_43": {
+        "hidden_dims": [
+          1280,
+          1024,
+          512,
+          256
+        ],
+        "lr": 0.0004,
+        "batch_size": 256,
+        "epochs": 2000,
+        "activation": "Sigmoid",
+        "batch_norm": false,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "selection": "minimum_training_MSE",
+        "joint_input_model_shared_between_42_and_43": true
+      },
+      "paper44": {
+        "hidden_dims": [
+          1280,
+          1024,
+          512,
+          256
+        ],
+        "lr": 0.0004,
+        "batch_size": 256,
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "max_epochs": 3000,
+        "selection": "minimum_evaluation_mode_training_MSE",
+        "validation_used": false,
+        "early_stopping": false,
+        "lr_scheduler": {
+          "name": "ReduceLROnPlateau",
+          "mode": "min",
+          "factor": 0.5,
+          "patience": 100,
+          "threshold": 0.0001,
+          "threshold_mode": "rel",
+          "cooldown": 0,
+          "min_lr": 1e-06,
+          "eps": 1e-08
+        }
+      },
+      "paper45": {
+        "candidates": [
+          {
+            "candidate_id": "C01",
+            "hidden_dims": [
+              1280,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0004,
+            "batch_size": 256,
+            "dropout": 0.4,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C02",
+            "hidden_dims": [
+              1280,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0004,
+            "batch_size": 256,
+            "dropout": 0.1,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C03",
+            "hidden_dims": [
+              1280,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0004,
+            "batch_size": 256,
+            "dropout": 0.1,
+            "weight_decay": 0.0
+          },
+          {
+            "candidate_id": "C04",
+            "hidden_dims": [
+              1280,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0004,
+            "batch_size": 256,
+            "dropout": 0.3,
+            "weight_decay": 0.001
+          },
+          {
+            "candidate_id": "C05",
+            "hidden_dims": [
+              1280,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0004,
+            "batch_size": 256,
+            "dropout": 0.2,
+            "weight_decay": 0.0001
+          },
+          {
+            "candidate_id": "C06",
+            "hidden_dims": [
+              1280,
+              1024,
+              512,
+              256
+            ],
+            "lr": 0.0004,
+            "batch_size": 256,
+            "dropout": 0.4,
+            "weight_decay": 0.0
+          }
+        ],
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "learning_rate_scheduler": false
+      }
+    },
+    "wine_quality_white": {
+      "abbreviation": "WQ-white",
+      "source_sha256": "4c42d9a7afbb7e893bf547c6e00723da993340a5dda8881165057f8c1942b74e",
+      "expected_active_data_path": "data/wine_quality_white.csv",
+      "paper42_43": {
+        "hidden_dims": [
+          512,
+          496,
+          192
+        ],
+        "lr": 0.0003,
+        "batch_size": 32,
+        "epochs": 2000,
+        "activation": "Sigmoid",
+        "batch_norm": false,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "selection": "minimum_training_MSE",
+        "joint_input_model_shared_between_42_and_43": true
+      },
+      "paper44": {
+        "hidden_dims": [
+          768,
+          512,
+          256,
+          128
+        ],
+        "lr": 0.0003,
+        "batch_size": 64,
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "max_epochs": 3000,
+        "selection": "minimum_evaluation_mode_training_MSE",
+        "validation_used": false,
+        "early_stopping": false,
+        "lr_scheduler": {
+          "name": "ReduceLROnPlateau",
+          "mode": "min",
+          "factor": 0.5,
+          "patience": 100,
+          "threshold": 0.0001,
+          "threshold_mode": "rel",
+          "cooldown": 0,
+          "min_lr": 1e-06,
+          "eps": 1e-08
+        }
+      },
+      "paper45": {
+        "candidates": [
+          {
+            "candidate_id": "C01",
+            "hidden_dims": [
+              768,
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 64,
+            "dropout": 0.4,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C02",
+            "hidden_dims": [
+              768,
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 64,
+            "dropout": 0.1,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C03",
+            "hidden_dims": [
+              768,
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 64,
+            "dropout": 0.1,
+            "weight_decay": 0.0
+          },
+          {
+            "candidate_id": "C04",
+            "hidden_dims": [
+              768,
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 64,
+            "dropout": 0.3,
+            "weight_decay": 0.001
+          },
+          {
+            "candidate_id": "C05",
+            "hidden_dims": [
+              768,
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 64,
+            "dropout": 0.2,
+            "weight_decay": 0.0001
+          },
+          {
+            "candidate_id": "C06",
+            "hidden_dims": [
+              768,
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 64,
+            "dropout": 0.4,
+            "weight_decay": 0.0
+          }
+        ],
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "learning_rate_scheduler": false
+      }
+    },
+    "airfoil_self_noise": {
+      "abbreviation": "AS",
+      "source_sha256": "66cc7ca0b628f0a6e5019c91558cc493d1c4df1c12db979d601db4f316c6b28c",
+      "expected_active_data_path": "data/airfoil_self_noise.csv",
+      "paper42_43": {
+        "hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "lr": 0.0003,
+        "batch_size": 32,
+        "epochs": 2000,
+        "activation": "Sigmoid",
+        "batch_norm": false,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "selection": "minimum_training_MSE",
+        "joint_input_model_shared_between_42_and_43": true
+      },
+      "paper44": {
+        "hidden_dims": [
+          512,
+          256,
+          128
+        ],
+        "lr": 0.0003,
+        "batch_size": 32,
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "max_epochs": 3000,
+        "selection": "minimum_evaluation_mode_training_MSE",
+        "validation_used": false,
+        "early_stopping": false,
+        "lr_scheduler": {
+          "name": "ReduceLROnPlateau",
+          "mode": "min",
+          "factor": 0.5,
+          "patience": 100,
+          "threshold": 0.0001,
+          "threshold_mode": "rel",
+          "cooldown": 0,
+          "min_lr": 1e-06,
+          "eps": 1e-08
+        }
+      },
+      "paper45": {
+        "candidates": [
+          {
+            "candidate_id": "C01",
+            "hidden_dims": [
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 32,
+            "dropout": 0.4,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C02",
+            "hidden_dims": [
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 32,
+            "dropout": 0.1,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C03",
+            "hidden_dims": [
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 32,
+            "dropout": 0.1,
+            "weight_decay": 0.0
+          },
+          {
+            "candidate_id": "C04",
+            "hidden_dims": [
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 32,
+            "dropout": 0.3,
+            "weight_decay": 0.001
+          },
+          {
+            "candidate_id": "C05",
+            "hidden_dims": [
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 32,
+            "dropout": 0.2,
+            "weight_decay": 0.0001
+          },
+          {
+            "candidate_id": "C06",
+            "hidden_dims": [
+              512,
+              256,
+              128
+            ],
+            "lr": 0.0003,
+            "batch_size": 32,
+            "dropout": 0.4,
+            "weight_decay": 0.0
+          }
+        ],
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "learning_rate_scheduler": false
+      }
+    },
+    "superconductivity": {
+      "abbreviation": "SC",
+      "source_sha256": "8978e84a2f7b656b144cf0a04aaee10cda51db825ecae6343a8b8f2cb317f245",
+      "expected_active_data_path": "data/superconductivity.csv",
+      "paper42_43": {
+        "hidden_dims": [
+          2048,
+          1024,
+          512
+        ],
+        "lr": 0.0003,
+        "batch_size": 256,
+        "epochs": 4000,
+        "activation": "Sigmoid",
+        "batch_norm": false,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "selection": "minimum_training_MSE",
+        "joint_input_model_shared_between_42_and_43": true
+      },
+      "paper44": {
+        "hidden_dims": [
+          2048,
+          1536,
+          768
+        ],
+        "lr": 0.0003,
+        "batch_size": 256,
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "dropout": 0.0,
+        "weight_decay": 0.0,
+        "max_epochs": 3000,
+        "selection": "minimum_evaluation_mode_training_MSE",
+        "validation_used": false,
+        "early_stopping": false,
+        "lr_scheduler": {
+          "name": "ReduceLROnPlateau",
+          "mode": "min",
+          "factor": 0.5,
+          "patience": 100,
+          "threshold": 0.0001,
+          "threshold_mode": "rel",
+          "cooldown": 0,
+          "min_lr": 1e-06,
+          "eps": 1e-08
+        }
+      },
+      "paper45": {
+        "candidates": [
+          {
+            "candidate_id": "C01",
+            "hidden_dims": [
+              2048,
+              1536,
+              768
+            ],
+            "lr": 0.0003,
+            "batch_size": 256,
+            "dropout": 0.4,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C02",
+            "hidden_dims": [
+              2048,
+              1536,
+              768
+            ],
+            "lr": 0.0003,
+            "batch_size": 256,
+            "dropout": 0.1,
+            "weight_decay": 1e-06
+          },
+          {
+            "candidate_id": "C03",
+            "hidden_dims": [
+              2048,
+              1536,
+              768
+            ],
+            "lr": 0.0003,
+            "batch_size": 256,
+            "dropout": 0.1,
+            "weight_decay": 0.0
+          },
+          {
+            "candidate_id": "C04",
+            "hidden_dims": [
+              2048,
+              1536,
+              768
+            ],
+            "lr": 0.0003,
+            "batch_size": 256,
+            "dropout": 0.3,
+            "weight_decay": 0.001
+          },
+          {
+            "candidate_id": "C05",
+            "hidden_dims": [
+              2048,
+              1536,
+              768
+            ],
+            "lr": 0.0003,
+            "batch_size": 256,
+            "dropout": 0.2,
+            "weight_decay": 0.0001
+          },
+          {
+            "candidate_id": "C06",
+            "hidden_dims": [
+              2048,
+              1536,
+              768
+            ],
+            "lr": 0.0003,
+            "batch_size": 256,
+            "dropout": 0.4,
+            "weight_decay": 0.0
+          }
+        ],
+        "activation": "LeakyReLU",
+        "batch_norm": true,
+        "learning_rate_scheduler": false
+      }
+    }
+  },
+  "neural_training_task_counts": {
+    "paper42_43_reusing_joint_model": 60,
+    "paper44_fixed_fitting": 90,
+    "paper45_candidate_search": 540,
+    "paper45_full_pool_refits": 90,
+    "total": 780,
+    "previous_paper45_candidate_search": 2160,
+    "previous_paper45_full_pool_refits": 90,
+    "current_paper45_total": 630,
+    "previous_paper45_total": 2250,
+    "paper45_task_reduction_percent": 72.0,
+    "includes_first_layer_and_non_neural_fits": false
+  }
+}

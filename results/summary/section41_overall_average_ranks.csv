@@ -1,0 +1,4 @@
+﻿method_key,MSE_rank,mean_rank,overall_rank
+MLP,1.0,1.0,1.0
+LR,2.0,2.0,2.0
+Ridge,3.0,3.0,3.0

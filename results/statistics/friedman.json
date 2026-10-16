@@ -1,0 +1,389 @@
+[
+  {
+    "section": "41",
+    "metric": "MSE",
+    "primary_metric": true,
+    "unit": "six dataset-level means; each mean contains five 80:20 splits",
+    "methods": [
+      "LR",
+      "MLP",
+      "Ridge"
+    ],
+    "n_datasets": 6,
+    "friedman_statistic": 12.0,
+    "friedman_p": 0.0001286008230452675,
+    "chi_square_p_reference_only": 0.002478752176666357,
+    "permutation": {
+      "p": 0.0001286008230452675,
+      "calibration": "exact_maximum_no_ties",
+      "draws": 0,
+      "seed": 20261016,
+      "extreme_count": 1,
+      "permutation_space": "7776"
+    },
+    "null_hypothesis": "method labels exchangeable within each independent dataset block",
+    "dataset_rank_matrix": {
+      "AlignedData_aligned": {
+        "LR": 2.0,
+        "MLP": 1.0,
+        "Ridge": 3.0
+      },
+      "Concrete_Data": {
+        "LR": 2.0,
+        "MLP": 1.0,
+        "Ridge": 3.0
+      },
+      "parkinsons_updrs_regression": {
+        "LR": 2.0,
+        "MLP": 1.0,
+        "Ridge": 3.0
+      },
+      "wine_quality_white": {
+        "LR": 2.0,
+        "MLP": 1.0,
+        "Ridge": 3.0
+      },
+      "airfoil_self_noise": {
+        "LR": 2.0,
+        "MLP": 1.0,
+        "Ridge": 3.0
+      },
+      "superconductivity": {
+        "LR": 2.0,
+        "MLP": 1.0,
+        "Ridge": 3.0
+      }
+    },
+    "p_holm": 0.0001286008230452675,
+    "significant_0_05": true,
+    "multiplicity_family": "four_MSE_tests"
+  },
+  {
+    "section": "42",
+    "metric": "MSE",
+    "primary_metric": true,
+    "unit": "six dataset-level means; each mean contains five 80:20 splits",
+    "methods": [
+      "LR|base_only",
+      "LR|base_plus_raw",
+      "MLP|base_only",
+      "MLP|base_plus_raw",
+      "Ridge|base_only",
+      "Ridge|base_plus_raw"
+    ],
+    "n_datasets": 6,
+    "friedman_statistic": 30.0,
+    "friedman_p": 5.1681786524750635e-15,
+    "chi_square_p_reference_only": 1.4748581038443073e-05,
+    "permutation": {
+      "p": 5.1681786524750635e-15,
+      "calibration": "exact_maximum_no_ties",
+      "draws": 0,
+      "seed": 20261016,
+      "extreme_count": 1,
+      "permutation_space": "193491763200000"
+    },
+    "null_hypothesis": "method labels exchangeable within each independent dataset block",
+    "dataset_rank_matrix": {
+      "AlignedData_aligned": {
+        "LR|base_only": 5.0,
+        "LR|base_plus_raw": 3.0,
+        "MLP|base_only": 2.0,
+        "MLP|base_plus_raw": 1.0,
+        "Ridge|base_only": 6.0,
+        "Ridge|base_plus_raw": 4.0
+      },
+      "Concrete_Data": {
+        "LR|base_only": 5.0,
+        "LR|base_plus_raw": 3.0,
+        "MLP|base_only": 2.0,
+        "MLP|base_plus_raw": 1.0,
+        "Ridge|base_only": 6.0,
+        "Ridge|base_plus_raw": 4.0
+      },
+      "parkinsons_updrs_regression": {
+        "LR|base_only": 5.0,
+        "LR|base_plus_raw": 3.0,
+        "MLP|base_only": 2.0,
+        "MLP|base_plus_raw": 1.0,
+        "Ridge|base_only": 6.0,
+        "Ridge|base_plus_raw": 4.0
+      },
+      "wine_quality_white": {
+        "LR|base_only": 5.0,
+        "LR|base_plus_raw": 3.0,
+        "MLP|base_only": 2.0,
+        "MLP|base_plus_raw": 1.0,
+        "Ridge|base_only": 6.0,
+        "Ridge|base_plus_raw": 4.0
+      },
+      "airfoil_self_noise": {
+        "LR|base_only": 5.0,
+        "LR|base_plus_raw": 3.0,
+        "MLP|base_only": 2.0,
+        "MLP|base_plus_raw": 1.0,
+        "Ridge|base_only": 6.0,
+        "Ridge|base_plus_raw": 4.0
+      },
+      "superconductivity": {
+        "LR|base_only": 5.0,
+        "LR|base_plus_raw": 3.0,
+        "MLP|base_only": 2.0,
+        "MLP|base_plus_raw": 1.0,
+        "Ridge|base_only": 6.0,
+        "Ridge|base_plus_raw": 4.0
+      }
+    },
+    "p_holm": 2.0672714609900254e-14,
+    "significant_0_05": true,
+    "multiplicity_family": "four_MSE_tests"
+  },
+  {
+    "section": "43",
+    "metric": "MSE",
+    "primary_metric": true,
+    "unit": "six dataset-level means; each mean contains five 80:20 splits",
+    "methods": [
+      "Convex-Stacking",
+      "E2E-MLP",
+      "E2E-RF",
+      "E2E-SVM",
+      "E2E-XGB",
+      "Meta-LR",
+      "Meta-RF",
+      "Meta-Ridge",
+      "Meta-SVM",
+      "Meta-XGB",
+      "NN-Stacking",
+      "Proposed"
+    ],
+    "n_datasets": 6,
+    "friedman_statistic": 58.43589743589744,
+    "friedman_p": 1e-06,
+    "chi_square_p_reference_only": 1.807538352477344e-08,
+    "permutation": {
+      "p": 1e-06,
+      "calibration": "monte_carlo_plus_one",
+      "draws": 999999,
+      "seed": 20261016,
+      "extreme_count": 0,
+      "permutation_space": "25216500766592354716319055882485760000000000",
+      "mc_resolution": 1e-06,
+      "mc_standard_error_approx": 9.999994999998751e-07
+    },
+    "null_hypothesis": "method labels exchangeable within each independent dataset block",
+    "dataset_rank_matrix": {
+      "AlignedData_aligned": {
+        "Convex-Stacking": 12.0,
+        "E2E-MLP": 3.0,
+        "E2E-RF": 5.0,
+        "E2E-SVM": 8.0,
+        "E2E-XGB": 9.0,
+        "Meta-LR": 10.0,
+        "Meta-RF": 4.0,
+        "Meta-Ridge": 11.0,
+        "Meta-SVM": 6.0,
+        "Meta-XGB": 7.0,
+        "NN-Stacking": 2.0,
+        "Proposed": 1.0
+      },
+      "Concrete_Data": {
+        "Convex-Stacking": 12.0,
+        "E2E-MLP": 8.0,
+        "E2E-RF": 7.0,
+        "E2E-SVM": 9.0,
+        "E2E-XGB": 4.0,
+        "Meta-LR": 10.0,
+        "Meta-RF": 5.0,
+        "Meta-Ridge": 11.0,
+        "Meta-SVM": 6.0,
+        "Meta-XGB": 3.0,
+        "NN-Stacking": 1.0,
+        "Proposed": 2.0
+      },
+      "parkinsons_updrs_regression": {
+        "Convex-Stacking": 11.0,
+        "E2E-MLP": 3.0,
+        "E2E-RF": 4.0,
+        "E2E-SVM": 12.0,
+        "E2E-XGB": 7.0,
+        "Meta-LR": 9.0,
+        "Meta-RF": 5.0,
+        "Meta-Ridge": 10.0,
+        "Meta-SVM": 8.0,
+        "Meta-XGB": 6.0,
+        "NN-Stacking": 1.0,
+        "Proposed": 2.0
+      },
+      "wine_quality_white": {
+        "Convex-Stacking": 12.0,
+        "E2E-MLP": 3.0,
+        "E2E-RF": 4.0,
+        "E2E-SVM": 9.0,
+        "E2E-XGB": 8.0,
+        "Meta-LR": 10.0,
+        "Meta-RF": 5.0,
+        "Meta-Ridge": 11.0,
+        "Meta-SVM": 6.0,
+        "Meta-XGB": 7.0,
+        "NN-Stacking": 2.0,
+        "Proposed": 1.0
+      },
+      "airfoil_self_noise": {
+        "Convex-Stacking": 11.0,
+        "E2E-MLP": 7.0,
+        "E2E-RF": 4.0,
+        "E2E-SVM": 12.0,
+        "E2E-XGB": 6.0,
+        "Meta-LR": 9.0,
+        "Meta-RF": 5.0,
+        "Meta-Ridge": 10.0,
+        "Meta-SVM": 8.0,
+        "Meta-XGB": 3.0,
+        "NN-Stacking": 2.0,
+        "Proposed": 1.0
+      },
+      "superconductivity": {
+        "Convex-Stacking": 11.0,
+        "E2E-MLP": 3.0,
+        "E2E-RF": 4.0,
+        "E2E-SVM": 12.0,
+        "E2E-XGB": 7.0,
+        "Meta-LR": 9.0,
+        "Meta-RF": 5.0,
+        "Meta-Ridge": 10.0,
+        "Meta-SVM": 8.0,
+        "Meta-XGB": 6.0,
+        "NN-Stacking": 2.0,
+        "Proposed": 1.0
+      }
+    },
+    "p_holm": 3e-06,
+    "significant_0_05": true,
+    "multiplicity_family": "four_MSE_tests"
+  },
+  {
+    "section": "44",
+    "metric": "MSE",
+    "primary_metric": true,
+    "unit": "six dataset-level means; each mean contains five 80:20 splits",
+    "methods": [
+      "Convex-Stacking",
+      "E2E-MLP",
+      "E2E-RF",
+      "E2E-SVM",
+      "E2E-XGB",
+      "Meta-LR",
+      "Meta-RF",
+      "Meta-Ridge",
+      "Meta-SVM",
+      "Meta-XGB",
+      "NN-Stacking",
+      "Proposed"
+    ],
+    "n_datasets": 6,
+    "friedman_statistic": 39.87179487179487,
+    "friedman_p": 1e-06,
+    "chi_square_p_reference_only": 3.7626919957401594e-05,
+    "permutation": {
+      "p": 1e-06,
+      "calibration": "monte_carlo_plus_one",
+      "draws": 999999,
+      "seed": 20261016,
+      "extreme_count": 0,
+      "permutation_space": "25216500766592354716319055882485760000000000",
+      "mc_resolution": 1e-06,
+      "mc_standard_error_approx": 9.999994999998751e-07
+    },
+    "null_hypothesis": "method labels exchangeable within each independent dataset block",
+    "dataset_rank_matrix": {
+      "AlignedData_aligned": {
+        "Convex-Stacking": 6.0,
+        "E2E-MLP": 8.0,
+        "E2E-RF": 7.0,
+        "E2E-SVM": 11.0,
+        "E2E-XGB": 9.0,
+        "Meta-LR": 4.0,
+        "Meta-RF": 3.0,
+        "Meta-Ridge": 5.0,
+        "Meta-SVM": 10.0,
+        "Meta-XGB": 1.0,
+        "NN-Stacking": 12.0,
+        "Proposed": 2.0
+      },
+      "Concrete_Data": {
+        "Convex-Stacking": 3.0,
+        "E2E-MLP": 10.0,
+        "E2E-RF": 9.0,
+        "E2E-SVM": 12.0,
+        "E2E-XGB": 7.0,
+        "Meta-LR": 1.0,
+        "Meta-RF": 6.0,
+        "Meta-Ridge": 2.0,
+        "Meta-SVM": 11.0,
+        "Meta-XGB": 4.0,
+        "NN-Stacking": 8.0,
+        "Proposed": 5.0
+      },
+      "parkinsons_updrs_regression": {
+        "Convex-Stacking": 7.0,
+        "E2E-MLP": 11.0,
+        "E2E-RF": 8.0,
+        "E2E-SVM": 12.0,
+        "E2E-XGB": 9.0,
+        "Meta-LR": 5.0,
+        "Meta-RF": 3.0,
+        "Meta-Ridge": 6.0,
+        "Meta-SVM": 10.0,
+        "Meta-XGB": 4.0,
+        "NN-Stacking": 2.0,
+        "Proposed": 1.0
+      },
+      "wine_quality_white": {
+        "Convex-Stacking": 1.0,
+        "E2E-MLP": 10.0,
+        "E2E-RF": 4.0,
+        "E2E-SVM": 11.0,
+        "E2E-XGB": 8.0,
+        "Meta-LR": 3.0,
+        "Meta-RF": 6.0,
+        "Meta-Ridge": 2.0,
+        "Meta-SVM": 12.0,
+        "Meta-XGB": 9.0,
+        "NN-Stacking": 7.0,
+        "Proposed": 5.0
+      },
+      "airfoil_self_noise": {
+        "Convex-Stacking": 7.0,
+        "E2E-MLP": 11.0,
+        "E2E-RF": 10.0,
+        "E2E-SVM": 12.0,
+        "E2E-XGB": 9.0,
+        "Meta-LR": 5.0,
+        "Meta-RF": 8.0,
+        "Meta-Ridge": 6.0,
+        "Meta-SVM": 3.0,
+        "Meta-XGB": 4.0,
+        "NN-Stacking": 1.0,
+        "Proposed": 2.0
+      },
+      "superconductivity": {
+        "Convex-Stacking": 6.0,
+        "E2E-MLP": 10.0,
+        "E2E-RF": 4.0,
+        "E2E-SVM": 12.0,
+        "E2E-XGB": 11.0,
+        "Meta-LR": 3.0,
+        "Meta-RF": 8.0,
+        "Meta-Ridge": 2.0,
+        "Meta-SVM": 9.0,
+        "Meta-XGB": 1.0,
+        "NN-Stacking": 5.0,
+        "Proposed": 7.0
+      }
+    },
+    "p_holm": 3e-06,
+    "significant_0_05": true,
+    "multiplicity_family": "four_MSE_tests"
+  }
+]

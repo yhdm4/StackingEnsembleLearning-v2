@@ -1,0 +1,15 @@
+{
+  "metric": "MSE",
+  "input_sha256": {
+    "summary\\section41_all_folds.csv": "bc41712a8cc98291fc4c47eff794f3d84180363ecfdb1454244bb555b67c0293",
+    "summary\\section42_all_folds.csv": "9cfc1009116cdc7f9934ade8ae41668716bb8ee9faaa3edae4f7e8e07e05b781",
+    "summary\\section43_all_folds.csv": "ced05dfd0f49f5f19f840a31102eae5606cb5569b90213f0303fdc3b4a92b440",
+    "summary\\section44_all_folds.csv": "48973ba802c201cfe677164af5c07e062e0fe4a5e6016b4cc12078d1645154b2"
+  },
+  "friedman_tests": 4,
+  "concordance_tests": 24,
+  "primary_p_adjustment": "Holm",
+  "seed": 20261016,
+  "inference_unit": "six datasets; five-fold means within each dataset",
+  "concordance_status": "descriptive; conditional P-values exploratory because training folds overlap"
+}

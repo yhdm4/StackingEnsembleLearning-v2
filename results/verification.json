@@ -1,0 +1,126 @@
+{
+  "status": "passed",
+  "original_run_completed_at": "2026-10-16 21:07:49",
+  "original_verification": {
+    "status": "passed",
+    "final_metric_checks": 5940,
+    "candidate_records": 540,
+    "failed_candidates": 0,
+    "candidate_validation_MSE_independently_checked": 540,
+    "neural_model_curves_checked": 240,
+    "max_independent_metric_errors": {
+      "MSE": 0.0,
+      "R2": 0.0,
+      "MAPE": 0.0,
+      "MAE": 0.0,
+      "RMSE": 0.0,
+      "MSELoss": 0.0
+    },
+    "separate_fit_and_validation_models_verified": true,
+    "all_valid_targets_retained": true,
+    "final_model_hashes_unchanged": true,
+    "github_modified": false
+  },
+  "result_counts": {
+    "paper42": 90,
+    "paper43": 180,
+    "paper44": 360,
+    "paper45": 360
+  },
+  "original_training_source_sha256": {
+    "main.py": "eb11078af763e4a4b097f767e508d3f0972aaca36cb2a23e19ad118edc565309",
+    "train_4_1.py": "4736140ae17c7834d3f1de09d05529d035bb0be009e4c5fe8b80e13daeb24b65",
+    "ablation_4_2.py": "8c8ac03bcd222085b4be0dce0c325bbee25ac81d762ac75adfaf92b1ee770bb8",
+    "train_4_3.py": "6f03487b4a3b28784714c2ee1620bffe5f7c8166acdce1ce151d39ab30e99369",
+    "predict_4_4.py": "7dfc41399bef5e6763d466a048d544116c4d70d26de3ac41042aca847a813f9f"
+  },
+  "release_source_sha256": {
+    "ablation_4_2.py": "086a21a27470b91c38e8746d936f29418c691127546f3c8dd6cda59879b136b8",
+    "main.py": "7fe5fad57116d1821d69dec70b01b0897b290bc510b83cca409a0dc99ceb9ca5",
+    "predict_4_4.py": "e248e9460dacd3a03f674a6a46e4324e1cafe11c880702d6cc5c78c69cc0ebc5",
+    "train_4_1.py": "d4e19502af68541a4fc76d1ed9910166cf8502bfe1fa12214d9b95eb6fd4f520",
+    "train_4_3.py": "7f7e3d79ee60153a0d8c15e354aa7cee8096697643306c3db9740c835d6f21b3"
+  },
+  "selection_metric": "MSE",
+  "auxiliary_metrics": [
+    "R2",
+    "MAPE",
+    "MAE",
+    "RMSE"
+  ],
+  "root_python_file_count": 5,
+  "code_release": "portable entry points; unchanged active model classes, optimizer loop and strict OOF mathematics",
+  "final_release_check": {
+    "original_metric_values_preserved": 5940,
+    "section_records": [
+      {
+        "section": "41",
+        "rows": 90,
+        "metric_columns_unchanged": true,
+        "MSE_ranks_independently_verified": true
+      },
+      {
+        "section": "42",
+        "rows": 180,
+        "metric_columns_unchanged": true,
+        "MSE_ranks_independently_verified": true
+      },
+      {
+        "section": "43",
+        "rows": 360,
+        "metric_columns_unchanged": true,
+        "MSE_ranks_independently_verified": true
+      },
+      {
+        "section": "44",
+        "rows": 360,
+        "metric_columns_unchanged": true,
+        "MSE_ranks_independently_verified": true
+      }
+    ],
+    "core_components_semantically_equal": [
+      "feature_columns",
+      "grouped_data",
+      "split_indices",
+      "make_base_models",
+      "make_meta_models",
+      "train_fold_pipelines",
+      "prepare_validation_arrays",
+      "train_local_neural",
+      "select_mlp_configs",
+      "AdaptiveMLP",
+      "PureSigmoidMLP",
+      "UNNSWithCorrection",
+      "fit_convex",
+      "metrics",
+      "predict_mlp",
+      "predict_nn_stacking",
+      "load_mlp"
+    ],
+    "root_python_files": 5,
+    "data_csv_files": 6,
+    "four_auxiliary_metrics_present_in_every_experiment": true,
+    "primary_ranking_and_statistics_metric": "MSE",
+    "paper_theorems_and_proofs_unchanged": true,
+    "paper_heading_structure_unchanged": true,
+    "synthetic_smoke": {
+      "status": "passed",
+      "data": "synthetic_only",
+      "real_test_rows_used": 0,
+      "all_finite_targets_retained": true,
+      "strict_oof_models": 30,
+      "activation_checks": [
+        {
+          "model": "Sigmoid",
+          "reload_verified": true
+        },
+        {
+          "model": "LeakyReLU",
+          "reload_verified": true
+        }
+      ],
+      "nn_stacking_reload_verified": true,
+      "validation_selection_and_endpoint_refit_verified": true
+    }
+  }
+}
