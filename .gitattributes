@@ -1,0 +1,2 @@
+# Preserve exact data and source bytes for reproducibility fingerprints on every platform.
+* -text
