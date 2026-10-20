@@ -107,7 +107,7 @@ def plot_curve_panel(
     ax, epochs: np.ndarray, mean: np.ndarray, std: np.ndarray, lr_mean: float, ridge_mean: float, mode: str
 ) -> None:
     """绘制完整历史、MLP尾段或线性基线放大面板，避免不同量级互相压缩。"""
-    ax.plot(epochs, mean, color="#2166ac", lw=1.2, label="MLP mean MSE")
+    ax.plot(epochs, mean, color="#2166ac", lw=1.2, label="MLP mean RMSE")
     ax.fill_between(
         epochs, np.maximum(0, mean - std), mean + std, color="#67a9cf", alpha=0.24, label="MLP ±1 SD"
     )
@@ -142,14 +142,14 @@ def plot_curve_panel(
         ax.set_ylim(max(0, low - pad), high + pad)
         ax.set_title("Full training history")
     ax.set_xlabel("Epoch")
-    ax.set_ylabel("Training MSE")
+    ax.set_ylabel("Training RMSE")
     ax.ticklabel_format(axis="y", style="plain", useOffset=False)
     ax.grid(alpha=0.2)
     ax.legend(fontsize=7, loc="best")
 
 
 def plot_linear_inset(ax, lr_mean: float, ridge_mean: float) -> None:
-    """在主图内嵌放大坐标，清楚显示五折 LR 与 Ridge 平均 MSE 的微小差异。"""
+    """在主图内嵌放大坐标，显示五折LR与Ridge平均RMSE的微小差异。"""
     inset = ax.inset_axes([0.58, 0.50, 0.38, 0.24])
     values = np.array([lr_mean, ridge_mean], dtype=float)
     span = max(abs(lr_mean - ridge_mean), max(abs(lr_mean), abs(ridge_mean), 1.0) * 1e-8)
@@ -165,35 +165,35 @@ def plot_linear_inset(ax, lr_mean: float, ridge_mean: float) -> None:
 
 
 def plot_fivefold_curves(source: Path, output: Path) -> pd.DataFrame:
-    """对五折4.1曲线求均值和标准差，输出双面板单图及带线性放大框的总图。"""
+    """逐折先将MSE开平方，再输出论文4.2的RMSE曲线、标准差与分页PDF。"""
     figure_dir = output / "figures"
     figure_dir.mkdir(parents=True, exist_ok=True)
     (output / "summary").mkdir(parents=True, exist_ok=True)
     diagnostics = []
     combined = []
     for dataset in DATASETS:
-        table = pd.read_csv(source / f"{dataset}.csv", encoding="utf-8-sig")
+        table = pd.read_csv(source / f"{dataset}.csv", encoding="utf-8-sig", float_precision="round_trip")
         if set(table.outer_fold) != set(range(5)):
             raise ValueError(f"{dataset} 损失曲线缺少折号")
         curves = [table.loc[table.outer_fold == fold].reset_index(drop=True) for fold in range(5)]
         epochs = curves[0]["epoch"].to_numpy()
         if any(not np.array_equal(epochs, curve["epoch"].to_numpy()) for curve in curves[1:]):
             raise RuntimeError(f"{dataset} 的五折epoch不一致")
-        values = np.vstack([curve["eval_mse"].to_numpy() for curve in curves])
+        values = np.sqrt(np.vstack([curve["eval_mse"].to_numpy() for curve in curves]))
         mean, std = values.mean(axis=0), values.std(axis=0, ddof=1)
-        lr_mean = float(np.mean([curve["LR_mse"].iloc[0] for curve in curves]))
-        ridge_mean = float(np.mean([curve["Ridge_mse"].iloc[0] for curve in curves]))
+        lr_mean = float(np.mean(np.sqrt([curve["LR_mse"].iloc[0] for curve in curves])))
+        ridge_mean = float(np.mean(np.sqrt([curve["Ridge_mse"].iloc[0] for curve in curves])))
         tail = max(2, int(len(epochs) * 0.1))
         slope = float(np.polyfit(epochs[-tail:], mean[-tail:], 1)[0])
         diagnostics.append(
             {
                 "dataset": dataset,
                 "epochs": int(epochs[-1]),
-                "final_mean_mse": float(mean[-1]),
-                "final_sd_mse": float(std[-1]),
+                "final_mean_rmse": float(mean[-1]),
+                "final_sd_rmse": float(std[-1]),
                 "last_10pct_slope_per_epoch": slope,
-                "LR_mean_mse": lr_mean,
-                "Ridge_mean_mse": ridge_mean,
+                "LR_mean_rmse": lr_mean,
+                "Ridge_mean_rmse": ridge_mean,
             }
         )
         combined.append((dataset, epochs, mean, std, lr_mean, ridge_mean))
@@ -206,15 +206,31 @@ def plot_fivefold_curves(source: Path, output: Path) -> pd.DataFrame:
             for extension in ("png", "pdf"):
                 fig.savefig(figure_dir / f"{dataset}_loss_fivefold.{extension}", dpi=240)
             plt.close(fig)
-    with plt.rc_context({"font.family": "DejaVu Sans", "font.size": 10, "pdf.fonttype": 42}):
-        fig, axes = plt.subplots(3, 2, figsize=(10.2, 10.2), layout="constrained")
+    with plt.rc_context({"font.family": "DejaVu Sans", "font.size": 9, "pdf.fonttype": 42}):
+        fig, axes = plt.subplots(3, 2, figsize=(10.2, 8.7), layout="constrained")
         for ax, (dataset, epochs, mean, std, lr_mean, ridge_mean) in zip(axes.flat, combined):
-            plot_curve_panel(ax, epochs, mean, std, lr_mean, ridge_mean, "main")
-            ax.set_title(f"{ABBR[dataset]} — full epoch range")
-            plot_linear_inset(ax, lr_mean, ridge_mean)
+            ax.plot(epochs, mean, lw=1.1, color="#2166ac", label="MLP")
+            ax.fill_between(epochs, np.maximum(0, mean-std), mean+std, color="#67a9cf", alpha=0.23, label="MLP ±1 SD")
+            ax.axhline(lr_mean, color="#b2182b", ls="--", lw=1.2, label="LR")
+            ax.axhline(ridge_mean, color="#d89013", ls="-.", lw=1.2, label="Ridge")
+            upper = max(lr_mean, ridge_mean, float(np.quantile(mean, 0.95))) * 1.25
+            ax.set(xlim=(1, epochs[-1]), ylim=(0, upper), title=ABBR[dataset], xlabel="Epoch", ylabel="Training RMSE")
+            ax.grid(alpha=0.18)
+            ax.legend(fontsize=7, loc="upper right")
+            inset = ax.inset_axes([0.56, 0.48, 0.39, 0.20])
+            span = max(abs(lr_mean-ridge_mean), max(abs(lr_mean), abs(ridge_mean), 1.0)*1e-8)
+            inset.scatter([0, 1], [lr_mean, ridge_mean], s=14, color=["#b2182b", "#d89013"], zorder=3)
+            inset.plot([0, 1], [lr_mean, ridge_mean], color="#555555", lw=0.6)
+            inset.set(xlim=(-0.35, 1.35), ylim=(min(lr_mean, ridge_mean)-2*span, max(lr_mean, ridge_mean)+2*span))
+            inset.set_xticks([0, 1], ["LR", "Ridge"])
+            inset.ticklabel_format(axis="y", style="plain", useOffset=False)
+            inset.tick_params(labelsize=5.5)
+            inset.grid(axis="y", alpha=0.2)
         # 六子图标题已注明数据集，正文图注说明均值和标准差。
         for extension in ("png", "pdf"):
             fig.savefig(figure_dir / f"all_six_convergence_fivefold.{extension}", dpi=240)
+        from main import save_paper_figure_rows
+        save_paper_figure_rows(fig, axes, figure_dir, "fit_rmse")
         plt.close(fig)
     result = pd.DataFrame(diagnostics)
     write_csv(output / "summary" / "section41_curve_diagnostics.csv", result)

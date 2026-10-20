@@ -1,7 +1,7 @@
 [
   {
     "section": "41",
-    "metric": "MSE",
+    "metric": "RMSE",
     "primary_metric": true,
     "unit": "six dataset-level means; each mean contains five 80:20 splits",
     "methods": [
@@ -56,7 +56,7 @@
     },
     "p_holm": 0.0001286008230452675,
     "significant_0_05": true,
-    "multiplicity_family": "four_MSE_tests"
+    "multiplicity_family": "four_section_primary_metric_tests"
   },
   {
     "section": "42",
@@ -136,11 +136,11 @@
     },
     "p_holm": 2.0672714609900254e-14,
     "significant_0_05": true,
-    "multiplicity_family": "four_MSE_tests"
+    "multiplicity_family": "four_section_primary_metric_tests"
   },
   {
     "section": "43",
-    "metric": "MSE",
+    "metric": "RMSE",
     "primary_metric": true,
     "unit": "six dataset-level means; each mean contains five 80:20 splits",
     "methods": [
@@ -260,11 +260,11 @@
     },
     "p_holm": 3e-06,
     "significant_0_05": true,
-    "multiplicity_family": "four_MSE_tests"
+    "multiplicity_family": "four_section_primary_metric_tests"
   },
   {
     "section": "44",
-    "metric": "MSE",
+    "metric": "RMSE",
     "primary_metric": true,
     "unit": "six dataset-level means; each mean contains five 80:20 splits",
     "methods": [
@@ -384,6 +384,6 @@
     },
     "p_holm": 3e-06,
     "significant_0_05": true,
-    "multiplicity_family": "four_MSE_tests"
+    "multiplicity_family": "four_section_primary_metric_tests"
   }
 ]

@@ -891,20 +891,13 @@ def load_base_groups(folder):
     }
 
 
+# 旧41--44编号对应论文4.2--4.5；报告主指标与训练、验证所用的MSE分别管理。
+PRIMARY_METRICS = {"41": "RMSE", "42": "MSE", "43": "RMSE", "44": "RMSE"}
 SECTION_METRICS = {
-    "41": ["MSE", "R2", "MAPE", "MAE", "RMSE", "MSELoss"],
-    "42": ["MSE", "R2", "MAPE", "MAE", "RMSE", "MSELoss"],
-    "43": ["MSE", "R2", "MAPE", "MAE", "RMSE", "MSELoss"],
-    "44": ["MSE", "R2", "MAPE", "MAE", "RMSE", "MSELoss"],
+    section: [metric] + [other for other in ["MSE", "R2", "MAPE", "MAE", "RMSE", "MSELoss"] if other != metric]
+    for section, metric in PRIMARY_METRICS.items()
 }
-
-# 所有小节仅依据原单位MSE排名；四项辅助指标完整展示。
-RANK_METRICS = {
-    "41": ["MSE"],
-    "42": ["MSE"],
-    "43": ["MSE"],
-    "44": ["MSE"],
-}
+RANK_METRICS = {section: [metric] for section, metric in PRIMARY_METRICS.items()}
 
 
 _NULL_CACHE = {}
@@ -959,8 +952,8 @@ def holm_adjust(p_values: Iterable[float]) -> np.ndarray:
 
 
 def primary_metric(section):
-    """四节排名和统计检验均使用原目标单位MSE。"""
-    return "MSE"
+    """返回论文对应小节的报告主指标；不会改变训练损失或验证选参准则。"""
+    return PRIMARY_METRICS[str(section)]
 
 
 def validate_metrics(frame: pd.DataFrame, section: str) -> None:
@@ -1154,10 +1147,11 @@ def split_concordance(
     return concordance_rows, dispersion_rows
 
 
-def save_section_summary(frame, section, output):
-    """保存单节五折指标、均值、样本标准差与平均排名，供论文表格直接引用。"""
+def save_section_summary(frame, section, output, write_fold_records=True):
+    """保存主指标汇总和排名；仅重汇总时保留逐折原始CSV的精确字节。"""
     summary = Path(output) / "summary"
-    write_csv(summary / f"section{section}_all_folds.csv", frame)
+    if write_fold_records:
+        write_csv(summary / f"section{section}_all_folds.csv", frame)
     write_csv(summary / f"section{section}_mean_std.csv", summarize_values(frame, section))
     by_dataset, overall = rank_values(frame, section)
     write_csv(summary / f"section{section}_dataset_average_ranks.csv", by_dataset)
@@ -1266,7 +1260,7 @@ def configure_unified(plan_path, output):
             if candidate["dropout"] not in grid["dropout"] or candidate["weight_decay"] not in grid["weight_decay"]:
                 raise ValueError("候选不属于独立参数网格")
     for section in ["41", "42", "43", "44"]:
-        RANK_METRICS[section] = ["MSE"]
+        RANK_METRICS[section] = [primary_metric(section)]
     set_seed()
     return RUN_OUTPUT
 
@@ -1498,13 +1492,13 @@ def plot_unified_fit(output):
                 folder = run_path(output, fold) / "datasets" / name
                 curve = pd.read_csv(folder / "section43" / method / "loss_curve.csv", encoding="utf-8-sig")
                 scale = joblib.load(folder / "preprocess.joblib")["scaler_y"].scale_[0]
-                curves.append(curve.eval_mse.to_numpy() * scale ** 2)
+                curves.append(np.sqrt(curve.eval_mse.to_numpy() * scale ** 2))
             values = np.stack(curves)
             epochs = np.arange(1, values.shape[1] + 1)
             mean, sd = values.mean(axis=0), values.std(axis=0, ddof=1)
             ax.plot(epochs, mean, label=method, linewidth=1)
             ax.fill_between(epochs, np.maximum(0, mean - sd), mean + sd, alpha=0.12)
-        ax.set(title=ABBR[name], xlabel="Epoch", ylabel="Training MSE (original units)")
+        ax.set(title=ABBR[name], xlabel="Epoch", ylabel="Training RMSE (original units)")
         ax.set_yscale("log")
         ax.grid(alpha=0.2)
         ax.legend(fontsize=8)
@@ -1515,7 +1509,7 @@ def plot_unified_fit(output):
 
 
 def summarize_unified_results(output):
-    """四节均完整、独立核验通过后输出指标、MSE排名、参数和最终中文实验汇报。"""
+    """四节完成并核验后，按照论文各节主指标输出排名、参数和中文实验汇报。"""
     output = Path(output)
     for section in ["41", "42", "43", "44"]:
         if not collect_section(section, output, DATASETS):
@@ -1526,17 +1520,18 @@ def summarize_unified_results(output):
     lines = ["# 四节统一实验结果", "", "白酒替代混合酒；全部数据集保留有效目标，精确同输入分组取目标均值。", "",
              "4.2、4.3为纯Sigmoid拟合与输入消融；4.4为独立充分训练拟合；4.5为单验证集选参后完整训练池重训。", "",
              "神经方法结构、学习率和批大小按数据集固定。4.5从独立20组合网格按种子20261014固定抽6组合，三个方法分别选参。", "",
-             "原单位MSE逐折排名、平均五折，再等权平均六数据集；其他指标辅助展示。", ""]
+             "4.2、4.4、4.5按RMSE排名，4.3按MSE排名；逐折排名后平均五折，再等权平均六数据集。训练及验证选择仍使用MSE。", ""]
     for section, title in [("43", "4.4训练拟合"), ("44", "4.5测试预测")]:
         overall = pd.read_csv(output / "summary" / f"section{section}_overall_average_ranks.csv", encoding="utf-8-sig")
-        lines.extend([f"## {title}总体MSE排名", "", markdown_table(overall,
-            ["method_key", "mean_rank", "overall_rank"], ["方法", "MSE平均名次", "排列位置"]), ""])
+        metric = primary_metric(section)
+        lines.extend([f"## {title}总体{metric}排名", "", markdown_table(overall,
+            ["method_key", "mean_rank", "overall_rank"], ["方法", f"{metric}平均名次", "排列位置"]), ""])
         summaries = pd.read_csv(output / "summary" / f"section{section}_mean_std.csv", encoding="utf-8-sig")
         for name in DATASETS:
-            selected = summaries.loc[summaries.dataset == name].sort_values("MSE_mean")
+            selected = summaries.loc[summaries.dataset == name].sort_values(f"{metric}_mean")
             lines.extend([f"### {ABBR[name]}", "", markdown_table(selected,
-                ["method_key", "MSE_mean", "MSE_std", "R2_mean", "MAE_mean", "RMSE_mean", "MAPE_mean"],
-                ["方法", "MSE均值", "MSE样本SD", "R2", "MAE", "RMSE", "MAPE百分比"]), ""])
+                ["method_key", f"{metric}_mean", f"{metric}_std", "R2_mean", "MAE_mean", "MSE_mean", "MAPE_mean"],
+                ["方法", f"{metric}均值", f"{metric}样本SD", "R2", "MAE", "MSE", "MAPE百分比"]), ""])
     lines.extend(["## 核验和完整文件", "", json.dumps(verification, ensure_ascii=False), "",
                   "summary/section41*与section42*为论文4.2与4.3；section43*与section44*为论文4.4与4.5。", "",
                   "summary/all_neural_parameters.csv保存4.4与4.5共180组神经训练参数和最佳轮数。", "",
@@ -1560,7 +1555,7 @@ def summarize_unified_results(output):
 
 def main(default_section="all"):
     """五个原入口共用命令行；默认在新目录运行四节，不覆盖仓库所附正式结果。"""
-    parser = argparse.ArgumentParser(description="论文4.2--4.5：白酒、全部有效目标、严格OOF、MSE主指标")
+    parser = argparse.ArgumentParser(description="论文4.2/4.4/4.5按RMSE报告，4.3按MSE报告；训练及验证选择仍使用MSE")
     parser.add_argument("--section", choices=["all", "41", "42", "43", "44"], default=default_section)
     parser.add_argument("--dataset", choices=["all"] + DATASETS, default="all")
     parser.add_argument("--fold", choices=["all", "0", "1", "2", "3", "4"], default="all")
@@ -1610,7 +1605,7 @@ def main(default_section="all"):
 
 
 def publication_analysis(output, permutations=999999, concordance_permutations=199999):
-    """仅依据四节完整逐折MSE重算排名、Friedman/Holm、Kendall一致性和正式图像。"""
+    """仅用已保存逐折记录按论文主指标重汇总、统计及绘图，保留原始记录且不训练模型。"""
     output = Path(output)
     omnibus, concordances, dispersions = [], [], []
     source_hashes = {}
@@ -1618,55 +1613,78 @@ def publication_analysis(output, permutations=999999, concordance_permutations=1
         path = output / "summary" / f"section{section}_all_folds.csv"
         frame = pd.read_csv(path, encoding="utf-8-sig", float_precision="round_trip")
         validate_metrics(frame, section)
-        source_hashes[str(path.relative_to(output))] = sha256(path)
-        save_section_summary(frame, section, output)
-        omnibus.append(statistical_test(frame, section, "MSE", permutations, 20261016))
-        concordance, dispersion = split_concordance(frame, section, "MSE", concordance_permutations, 20261017)
+        source_hashes[path.relative_to(output).as_posix()] = sha256(path)
+        save_section_summary(frame, section, output, write_fold_records=False)
+        metric = primary_metric(section)
+        omnibus.append(statistical_test(frame, section, metric, permutations, 20261016))
+        concordance, dispersion = split_concordance(frame, section, metric, concordance_permutations, 20261017)
         concordances.extend(concordance)
         dispersions.extend(dispersion)
     for row, adjusted in zip(omnibus, holm_adjust([row["friedman_p"] for row in omnibus])):
-        row.update(p_holm=float(adjusted), significant_0_05=bool(adjusted < 0.05), multiplicity_family="four_MSE_tests")
+        row.update(p_holm=float(adjusted), significant_0_05=bool(adjusted < 0.05), multiplicity_family="four_section_primary_metric_tests")
     agreement = pd.DataFrame(concordances)
     agreement["p_conditional_holm"] = holm_adjust(agreement.p_conditional)
-    agreement["multiplicity_family"] = "24_MSE_conditional_tests"
+    agreement["multiplicity_family"] = "24_section_primary_metric_conditional_tests"
     write_json(output / "statistics/friedman.json", omnibus)
     write_csv(output / "statistics/kendall_concordance.csv", agreement)
     write_csv(output / "statistics/split_dispersion.csv", pd.DataFrame(dispersions))
-    write_json(output / "statistics/verification.json", dict(metric="MSE", input_sha256=source_hashes,
+    for path in sorted((output / "curves").rglob("*.csv")):
+        source_hashes[str(path.relative_to(output)).replace("\\", "/")] = sha256(path)
+    verification = dict(primary_metrics=PRIMARY_METRICS, training_and_validation_metric="MSE", input_sha256=source_hashes,
                friedman_tests=4, concordance_tests=24, primary_p_adjustment="Holm", seed=20261016,
                inference_unit="six datasets; five-fold means within each dataset",
-               concordance_status="descriptive; conditional P-values exploratory because training folds overlap"))
+                curve_aggregation="sqrt per trial first, then mean and sample SD across five trials",
+                no_retraining=True, source_records_unchanged=True,
+                concordance_status="descriptive; conditional P-values exploratory because training folds overlap")
     from train_4_1 import plot_fivefold_curves
     plot_fivefold_curves(output / "curves", output)
     plot_publication_fit(output)
-    log("MSE统计及两组正式曲线已生成；未进行参数搜索或重新训练")
+    for relative, digest in source_hashes.items():
+        if sha256(output / relative) != digest:
+            raise RuntimeError(f"原始逐折记录或曲线发生变化：{relative}")
+    write_json(output / "statistics/verification.json", verification)
+    log("已按论文各节RMSE/MSE口径生成统计及RMSE曲线；未进行参数搜索或重新训练")
+    return verification
+
+
+def save_paper_figure_rows(figure, axes, destination, prefix):
+    """将六子图按每行两图导出为矢量PDF，供论文自然分页使用。"""
+    from matplotlib.transforms import Bbox
+    figure.canvas.draw()
+    renderer = figure.canvas.get_renderer()
+    for row in range(3):
+        box = Bbox.union([ax.get_tightbbox(renderer) for ax in axes[row]])
+        box = box.expanded(1.008, 1.025).transformed(figure.dpi_scale_trans.inverted())
+        figure.savefig(Path(destination) / f"{prefix}_row{row+1}.pdf", bbox_inches=box, pad_inches=0.02)
 
 
 def plot_publication_fit(output):
-    """从已保存的原单位训练曲线重画4.4六数据集五折均值和样本标准差。"""
+    """逐折将原量纲MSE开平方后，再绘制4.4的RMSE均值与样本标准差。"""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     output = Path(output)
-    with plt.rc_context({"font.family": "DejaVu Sans", "font.size": 10, "pdf.fonttype": 42}):
-        figure, axes = plt.subplots(3, 2, figsize=(10.2, 10.2), constrained_layout=True)
+    (output / "figures").mkdir(parents=True, exist_ok=True)
+    with plt.rc_context({"font.family": "DejaVu Sans", "font.size": 9, "pdf.fonttype": 42}):
+        figure, axes = plt.subplots(3, 2, figsize=(10.2, 8.7), constrained_layout=True)
         for ax, name in zip(axes.flat, DATASETS):
             table = pd.read_csv(output / "curves/paper44" / f"{name}.csv", encoding="utf-8-sig")
             for method, color in zip(TRAINING_PLAN["neural_methods"], ["#2166ac", "#d95f02", "#2b8c6b"]):
                 current = table.loc[table.method == method]
-                pivot = current.pivot(index="epoch", columns="outer_fold", values="MSE")
+                pivot = np.sqrt(current.pivot(index="epoch", columns="outer_fold", values="MSE"))
                 assert pivot.shape == (3000, 5) and not pivot.isna().any().any()
                 mean, sd = pivot.mean(axis=1), pivot.std(axis=1, ddof=1)
-                ax.plot(pivot.index, mean, color=color, lw=1.15, label=method)
+                ax.plot(pivot.index, mean, color=color, lw=1.1, label=method)
                 ax.fill_between(pivot.index, mean-sd, mean+sd, where=(mean-sd)>0, color=color, alpha=0.12)
             ax.set_title(ABBR[name])
             ax.set_xlabel("Epoch")
-            ax.set_ylabel("Training MSE")
+            ax.set_ylabel("Training RMSE")
             ax.set_yscale("log")
             ax.grid(alpha=0.18)
-            ax.legend(fontsize=8, loc="upper right")
+            ax.legend(fontsize=7, loc="upper right")
         for extension in ["pdf", "png"]:
             figure.savefig(output / "figures" / f"paper44_training_curves.{extension}", dpi=240)
+        save_paper_figure_rows(figure, axes, output / "figures", "neural_rmse")
         plt.close(figure)
 
 

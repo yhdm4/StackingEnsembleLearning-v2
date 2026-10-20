@@ -1,8 +1,8 @@
 # StackingEnsembleLearning-v2
 
-Regression stacking experiments for manuscript Sections 4.2–4.5. Six datasets, five fixed 80:20 divisions, twelve comparison methods. MSE is the primary measure; R², MAPE, MAE and RMSE are auxiliary measures.
+Regression stacking experiments for manuscript Sections 4.2–4.5. Six datasets, five fixed 80:20 divisions, twelve comparison methods. **RMSE is the reporting and ranking measure in Sections 4.2, 4.4 and 4.5; MSE is retained in Section 4.3.** Training loss, validation selection and early stopping continue to use MSE.
 
-The published results contain 990 dataset–trial–method records. Proposed has mean MSE rank **1.3000 (first)** in the training comparison and **3.8667 (second)** in the test comparison. These are descriptive rankings, not claims of pairwise statistical significance.
+The published results contain 990 dataset–trial–method records. Proposed has mean RMSE rank **1.3000 (first)** in the training comparison and **3.8667 (second)** in the test comparison. The 2026-10-20 reporting update recalculates summaries, statistics and figures from those existing records; it does not retrain or reselect models. These are descriptive rankings, not claims of pairwise statistical significance.
 
 ## Files
 
@@ -15,10 +15,10 @@ predict_4_4.py          Manuscript 4.5: predictions from validation-selected fin
 data/                   Six input CSV files
 results/
   configuration.json    Complete portable training configuration and six candidate combinations
-  summary/              Four experiments, fold records, means, sample SDs, MSE ranks and neural parameters
+  summary/              Four experiments, original fold records, means, sample SDs, section-specific ranks and neural parameters
   curves/               Per-trial original-unit training-MSE trajectories
-  figures/              Redrawn PDF and PNG figures
-  statistics/           MSE Friedman/Holm and Kendall concordance calculations
+  figures/              RMSE PDF/PNG figures and two-panel row PDFs matching the manuscript
+  statistics/           Section-specific RMSE/MSE Friedman/Holm and Kendall concordance calculations
   verification.json     Verified experiment counts, prediction checks and source fingerprints
 LICENSE
 ```
@@ -36,7 +36,7 @@ The filenames and result keys `41`, `42`, `43`, `44` retain the original code st
 | AS | airfoil_self_noise.csv | 1503 | 1503 | 5 |
 | SC | superconductivity.csv | 21263 | 15170 | 81 |
 
-WQ contains white wine only. AD is anonymized industrial bauxite-process data; the other datasets are the concrete-strength, Parkinson’s telemonitoring, White Wine Quality, Airfoil Self-Noise and Superconductivity datasets cited in the manuscript.
+WQ contains white wine only. AD is industrial bauxite-process data with sensitive information removed; the other datasets are the concrete-strength, Parkinson’s telemonitoring, White Wine Quality, Airfoil Self-Noise and Superconductivity datasets cited in the manuscript.
 
 Records with exactly identical actual input vectors are grouped before division. Their target is the arithmetic mean, each input group receives equal weight, and first-appearance order is retained. All finite valid targets are kept. No high or low target values are removed. Non-finite data cause an explicit error.
 
@@ -74,9 +74,20 @@ There are 540 candidate fits and 90 final neural refits in 4.5. Candidate weight
 
 Each dataset’s MSE, R², MAPE, MAE and RMSE are computed after inverse transformation and reported as five-trial mean and sample SD. MAPE is a percentage with a denominator floor of 1e-8. `MSELoss` remains in the machine-readable records as an implementation check on the standardized target scale.
 
-Only MSE determines ranks: rank the twelve methods within each trial and dataset, average the five ranks for a dataset, then average equally across six datasets. Ties receive average ranks within trials and the minimum position when ordering final mean ranks. A mean rank and its final position are different quantities. Raw errors from differently scaled datasets are not averaged together.
+The reporting measures are configured by `PRIMARY_METRICS` in `main.py`:
 
-Friedman tests rank five-trial mean MSEs within each of six dataset blocks. Four omnibus P-values are jointly Holm-adjusted. There are 999999 Monte Carlo permutations with a plus-one correction, except cases calculated exactly. Kendall W describes agreement among the five MSE rankings per dataset; its 24 conditional P-values form a separate Holm family and remain exploratory because training sets overlap. An omnibus method difference does not prove a Proposed-versus-every-baseline advantage.
+| Manuscript section | File key | Reporting and ranking measure |
+| --- | --- | --- |
+| 4.2 | `41` | RMSE |
+| 4.3 | `42` | MSE |
+| 4.4 | `43` | RMSE |
+| 4.5 | `44` | RMSE |
+
+Rank methods by that section's measure within each trial and dataset, average the five ranks for a dataset, then average equally across six datasets. Ties receive average ranks within trials and the minimum position when ordering final mean ranks. A mean rank and its final position are different quantities. Raw errors from differently scaled datasets are not averaged together.
+
+For RMSE summaries and curves, take the square root of each trial's MSE **before** calculating the five-trial mean and sample SD. Taking the square root of mean MSE would give a different quantity. Original curve CSVs retain MSE values as source records; the plotted axes and diagnostic summaries use RMSE.
+
+Friedman tests rank five-trial means of the corresponding section's measure within each of six dataset blocks. Four omnibus P-values are jointly Holm-adjusted. There are 999999 Monte Carlo permutations with a plus-one correction, except cases calculated exactly. Kendall W describes agreement among the five rankings per dataset using the same section-specific measure; its 24 conditional P-values form a separate Holm family and remain exploratory because training sets overlap. An omnibus method difference does not prove a Proposed-versus-every-baseline advantage.
 
 ## Reproduction
 
@@ -95,11 +106,13 @@ python main.py --stage summarize --output results/reproduced
 # A small training request; it does not start the global test stage.
 python main.py --stage train --dataset wine_quality_white --fold 0 --output results/white_trial
 
-# Recompute statistics and redraw figures from the published fold records and curves.
+# Reproduce the manuscript summaries, ranks, statistics and RMSE figures without training.
 python main.py --stage summarize --output results
 ```
 
-The four original entry files also accept the shared `--dataset`, `--fold`, `--output` and `--stage` arguments. `train_4_1.py` runs 4.2; `ablation_4_2.py` runs 4.3; `train_4_3.py` runs the 4.4 training comparison. The recommended `main.py` workflow prepares all final models before 4.5 testing.
+The last command uses the supplied CSVs and requires no model caches. It updates derived summaries and figures while preserving the exact bytes of the four `*_all_folds.csv` files and all source curve CSVs. `statistics/verification.json` records the measure mapping and source hashes. The manuscript's row figures are `figures/fit_rmse_row1.pdf` through `row3.pdf` and `figures/neural_rmse_row1.pdf` through `row3.pdf`. It does not change the frozen training configuration, candidate choices, selected epochs or original verification record.
+
+The four original entry files also accept the shared `--dataset`, `--fold`, `--output` and `--stage` arguments. `train_4_1.py` runs 4.2; `ablation_4_2.py` runs 4.3; `train_4_3.py` runs the 4.4 training comparison. The recommended `main.py` workflow prepares all final models before 4.5 testing. Newly trained runs use the same reporting measure mapping.
 
 All 30 training tasks must finish before the final-model freeze gate permits testing. Cached protocols record code, data and configuration hashes and reject incompatible reuse. Source edits require a new output directory. Large model caches and intermediate candidate weights are excluded from the repository.
 

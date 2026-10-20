@@ -1,4 +1,4 @@
-﻿method_key,MSE_rank,mean_rank,overall_rank
+﻿method_key,RMSE_rank,mean_rank,overall_rank
 Meta-XGB,3.6999999999999997,3.6999999999999997,1.0
 Proposed,3.8666666666666667,3.8666666666666667,2.0
 Meta-LR,4.0,4.0,3.0

@@ -1,4 +1,4 @@
-﻿dataset,method_key,MSE_rank,mean_rank
+﻿dataset,method_key,RMSE_rank,mean_rank
 AlignedData_aligned,LR,2.0,2.0
 AlignedData_aligned,MLP,1.0,1.0
 AlignedData_aligned,Ridge,3.0,3.0

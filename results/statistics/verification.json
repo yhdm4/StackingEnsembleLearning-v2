@@ -1,15 +1,36 @@
 {
-  "metric": "MSE",
+  "primary_metrics": {
+    "41": "RMSE",
+    "42": "MSE",
+    "43": "RMSE",
+    "44": "RMSE"
+  },
+  "training_and_validation_metric": "MSE",
   "input_sha256": {
-    "summary\\section41_all_folds.csv": "bc41712a8cc98291fc4c47eff794f3d84180363ecfdb1454244bb555b67c0293",
-    "summary\\section42_all_folds.csv": "9cfc1009116cdc7f9934ade8ae41668716bb8ee9faaa3edae4f7e8e07e05b781",
-    "summary\\section43_all_folds.csv": "ced05dfd0f49f5f19f840a31102eae5606cb5569b90213f0303fdc3b4a92b440",
-    "summary\\section44_all_folds.csv": "48973ba802c201cfe677164af5c07e062e0fe4a5e6016b4cc12078d1645154b2"
+    "summary/section41_all_folds.csv": "bc41712a8cc98291fc4c47eff794f3d84180363ecfdb1454244bb555b67c0293",
+    "summary/section42_all_folds.csv": "9cfc1009116cdc7f9934ade8ae41668716bb8ee9faaa3edae4f7e8e07e05b781",
+    "summary/section43_all_folds.csv": "ced05dfd0f49f5f19f840a31102eae5606cb5569b90213f0303fdc3b4a92b440",
+    "summary/section44_all_folds.csv": "48973ba802c201cfe677164af5c07e062e0fe4a5e6016b4cc12078d1645154b2",
+    "curves/airfoil_self_noise.csv": "f03ab433828fe40827c10c8bfa09b688683096881ea58ca5d07e898a9990bbe3",
+    "curves/AlignedData_aligned.csv": "b741300307e64498dc46339f8ea42b1ba276014884c9919f75d53ca2b7555bd4",
+    "curves/Concrete_Data.csv": "c28dd8c2a305fa3037add762cc6ad4d82cf502f35d1819cf515b79bff7c86e6f",
+    "curves/paper44/airfoil_self_noise.csv": "2ff7467858a419fe41d2a8f01a5eaa57cfac73464583e6321511494557e88dd2",
+    "curves/paper44/AlignedData_aligned.csv": "0b1932c88a5a9a7a93a945a8b50ec312375abfce09b7a9457d1b921db0230c8f",
+    "curves/paper44/Concrete_Data.csv": "0d0c4a1d0a6cf7e53f50ba315cb19c7ef92b95fcb719da40ee97ba710e2789f5",
+    "curves/paper44/parkinsons_updrs_regression.csv": "258252f85e41239727775f986e1def420513593f9b4745b8fe02f0f06b53b751",
+    "curves/paper44/superconductivity.csv": "abae187b11566964fecd9d42012e84a2326d34d335ff660d133d7a42413d0473",
+    "curves/paper44/wine_quality_white.csv": "73f5a0710a8074600afe9f25e262cada6ca67603326152c0524057d00b72e7fa",
+    "curves/parkinsons_updrs_regression.csv": "9a06875d6e543c9b6bf2d87d4b6e67cbf7d5fcd3f8983536b08c0fd9e3850a93",
+    "curves/superconductivity.csv": "9f37b6e85c39bad85432377ceca12c3f5a23c896641ac5afdaa50815ceaf98e2",
+    "curves/wine_quality_white.csv": "7a25d8722266c257ecb69e8a39042b72edb410eafd0771a7d37fb8d3e0e4c3c2"
   },
   "friedman_tests": 4,
   "concordance_tests": 24,
   "primary_p_adjustment": "Holm",
   "seed": 20261016,
   "inference_unit": "six datasets; five-fold means within each dataset",
+  "curve_aggregation": "sqrt per trial first, then mean and sample SD across five trials",
+  "no_retraining": true,
+  "source_records_unchanged": true,
   "concordance_status": "descriptive; conditional P-values exploratory because training folds overlap"
 }
